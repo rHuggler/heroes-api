@@ -22,6 +22,12 @@ class HeroPublic(HeroBase):
     id: int
 
 
+class HeroUpdate(SQLModel):
+    name: str | None = None
+    secret_name: str | None = None
+    age: int | None = None
+
+
 sqlite_file_name = "herobase.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
@@ -68,3 +74,17 @@ def read_hero(hero_id: int):
         if not hero:
             raise HTTPException(status_code=404, detail="Hero not found")
         return hero
+
+
+@app.patch("/heroes/{hero_id}", response_model=HeroPublic)
+def update_hero(hero_id: int, hero: HeroUpdate):
+    with Session(engine) as session:
+        db_hero = session.get(Hero, hero_id)
+        if not db_hero:
+            raise HTTPException(status_code=404, detail="Hero not found")
+        hero_data = hero.model_dump(exclude_unset=True)
+        db_hero.sqlmodel_update(hero_data)
+        session.add(db_hero)
+        session.commit()
+        session.refresh(db_hero)
+        return db_hero
