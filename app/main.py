@@ -41,6 +41,7 @@ class Hero(HeroBase, table=True):
 
     team: Team | None = Relationship(back_populates="heroes")
 
+
 class HeroCreate(HeroBase):
     pass
 
@@ -101,7 +102,12 @@ def create_hero(*, session: Session = Depends(get_db_session), hero: HeroCreate)
 
 
 @app.get("/heroes", response_model=list[HeroPublic])
-def read_heroes(*, session: Session = Depends(get_db_session), offset: int = 0, limit: int = Query(default=100, le=100)):
+def read_heroes(
+    *,
+    session: Session = Depends(get_db_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
+):
     heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
     return heroes
 
@@ -115,7 +121,9 @@ def read_hero(*, session: Session = Depends(get_db_session), hero_id: int):
 
 
 @app.patch("/heroes/{hero_id}", response_model=HeroPublic)
-def update_hero(*, session: Session = Depends(get_db_session), hero_id: int, hero: HeroUpdate):
+def update_hero(
+    *, session: Session = Depends(get_db_session), hero_id: int, hero: HeroUpdate
+):
     db_hero = session.get(Hero, hero_id)
     if not db_hero:
         raise HTTPException(status_code=404, detail="Hero not found")
@@ -134,7 +142,7 @@ def delete_hero(*, session: Session = Depends(get_db_session), hero_id: int):
         raise HTTPException(status_code=404, detail="Hero not found")
     session.delete(hero)
     session.commit()
-    return { "ok": True }
+    return {"ok": True}
 
 
 @app.post("/teams", response_model=TeamPublic)
@@ -147,7 +155,12 @@ def create_team(*, session: Session = Depends(get_db_session), team: TeamCreate)
 
 
 @app.get("/teams", response_model=list[TeamPublic])
-def read_teams(*, session: Session = Depends(get_db_session), offset: int = 0, limit: int = Query(default=100, le=100)):
+def read_teams(
+    *,
+    session: Session = Depends(get_db_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
+):
     teams = session.exec(select(Team).offset(offset).limit(limit)).all()
     return teams
 
@@ -161,7 +174,9 @@ def read_team(*, session: Session = Depends(get_db_session), team_id: int):
 
 
 @app.patch("/teams/{team_id}", response_model=TeamPublic)
-def update_team(*, session: Session = Depends(get_db_session), team_id: int, team: TeamUpdate):
+def update_team(
+    *, session: Session = Depends(get_db_session), team_id: int, team: TeamUpdate
+):
     db_team = session.get(Team, team_id)
     if not db_team:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -180,4 +195,4 @@ def delete_team(*, session: Session = Depends(get_db_session), team_id: int):
         raise HTTPException(status_code=404, detail="Team not found")
     session.delete(team)
     session.commit()
-    return { "ok": True }
+    return {"ok": True}
