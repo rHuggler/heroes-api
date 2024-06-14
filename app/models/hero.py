@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .team import Team
+    from app.models.team import Team
 
 
 class HeroBase(SQLModel):

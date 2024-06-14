@@ -1,7 +1,7 @@
 from typing import Optional
 
-from .team import TeamPublic
-from .hero import HeroPublic
+from app.models.team import TeamPublic
+from app.models.hero import HeroPublic
 
 
 class HeroPublicWithTeam(HeroPublic):
