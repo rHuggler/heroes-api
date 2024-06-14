@@ -6,7 +6,9 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.main import app, get_db_session, Hero, Team
+from app.main import app, get_db_session
+from app.models.hero import Hero
+from app.models.team import Team
 
 
 @pytest.fixture(name="db_session")
@@ -39,7 +41,7 @@ def client_fixture(db_session: Session):
 
 @pytest.fixture(name="hero")
 def create_example_hero(db_session: Session):
-    hero = Hero(name="Pedro Parques", secret_name="Spoder-Man")
+    hero = Hero(name="Pedro Parques", secret_name="Spoder-Man", age=21, team_id=1)
     db_session.add(hero)
     db_session.commit()
     db_session.refresh(hero)
@@ -270,3 +272,17 @@ def test_delete_team(db_session: Session, client: TestClient, team: Team):
 def test_delete_missing_team(client: TestClient):
     response = client.delete("/teams/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_hero_populates_team(client: TestClient, hero: Hero, team: Team):
+    response = client.get(f"/heroes/{hero.id}")
+    data = response.json()
+
+    assert data["team"]["name"] == team.name
+
+
+def test_team_populates_heroes(client: TestClient, hero: Hero, team: Team):
+    response = client.get(f"/teams/{team.id}")
+    data = response.json()
+
+    assert data["heroes"][0]["name"] == hero.name

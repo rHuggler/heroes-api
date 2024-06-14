@@ -1,69 +1,11 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
+from sqlmodel import Session, SQLModel, create_engine, select
 
-
-class TeamBase(SQLModel):
-    name: str = Field(index=True)
-    headquarters: str
-
-
-class Team(TeamBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
-    heroes: list["Hero"] = Relationship(back_populates="team")
-
-
-class TeamCreate(TeamBase):
-    pass
-
-
-class TeamPublic(TeamBase):
-    id: int
-
-
-class TeamUpdate(SQLModel):
-    name: str | None = None
-    headquarters: str | None = None
-
-
-class HeroBase(SQLModel):
-    name: str = Field(index=True)
-    secret_name: str
-    age: int | None = Field(default=None, index=True)
-
-    team_id: int | None = Field(default=None, foreign_key="team.id")
-
-
-class Hero(HeroBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
-    team: Team | None = Relationship(back_populates="heroes")
-
-
-class HeroCreate(HeroBase):
-    pass
-
-
-class HeroPublic(HeroBase):
-    id: int
-
-
-class HeroUpdate(SQLModel):
-    name: str | None = None
-    secret_name: str | None = None
-    age: int | None = None
-    team_id: int | None = None
-
-
-class TeamPublicWithHeroes(TeamPublic):
-    heroes: list[HeroPublic] | None = None
-
-
-class HeroPublicWithTeam(HeroPublic):
-    team: TeamPublic | None = None
-
+from app.models.hero import Hero, HeroCreate, HeroUpdate, HeroPublic
+from app.models.team import Team, TeamCreate, TeamUpdate, TeamPublic
+from app.models.related import HeroPublicWithTeam, TeamPublicWithHeroes
 
 sqlite_file_name = "herobase.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
