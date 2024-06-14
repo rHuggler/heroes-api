@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 
@@ -55,7 +55,16 @@ def create_hero(hero: HeroCreate):
 
 
 @app.get("/heroes", response_model=list[HeroPublic])
-def read_hero():
+def read_heroes():
     with Session(engine) as session:
         heroes = session.exec(select(Hero)).all()
         return heroes
+
+
+@app.get("/heroes/{hero_id}", response_model=HeroPublic)
+def read_hero(hero_id: int):
+    with Session(engine) as session:
+        hero = session.get(Hero, hero_id)
+        if not hero:
+            raise HTTPException(status_code=404, detail="Hero not found")
+        return hero
