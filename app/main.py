@@ -11,6 +11,19 @@ class Hero(SQLModel, table=True):
     age: int | None = Field(default=None, index=True)
 
 
+class HeroCreate(SQLModel):
+    name: str
+    secret_name: str
+    age: int | None = None
+
+
+class HeroPublic(SQLModel):
+    id: int
+    name: str
+    secret_name: str
+    age: int | None = None
+
+
 sqlite_file_name = "herobase.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
@@ -33,16 +46,17 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.post("/heroes", response_model=Hero)
-def create_hero(hero: Hero):
+@app.post("/heroes", response_model=HeroPublic)
+def create_hero(hero: HeroCreate):
     with Session(engine) as session:
-        session.add(hero)
+        db_hero = Hero.model_validate(hero)
+        session.add(db_hero)
         session.commit()
-        session.refresh(hero)
-        return hero
+        session.refresh(db_hero)
+        return db_hero
 
 
-@app.get("/heroes", response_model=list[Hero])
+@app.get("/heroes", response_model=list[HeroPublic])
 def read_hero():
     with Session(engine) as session:
         heroes = session.exec(select(Hero)).all()
