@@ -6,7 +6,8 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.main import app, get_db_session
+from app.main import app
+from app.dependencies.database import get_db_session
 from app.models.hero import Hero
 from app.models.team import Team
 
