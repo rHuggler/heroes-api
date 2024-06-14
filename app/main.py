@@ -4,24 +4,22 @@ from fastapi import FastAPI
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 
-class Hero(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class HeroBase(SQLModel):
     name: str = Field(index=True)
     secret_name: str
     age: int | None = Field(default=None, index=True)
 
 
-class HeroCreate(SQLModel):
-    name: str
-    secret_name: str
-    age: int | None = None
+class Hero(HeroBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
 
 
-class HeroPublic(SQLModel):
+class HeroCreate(HeroBase):
+    pass
+
+
+class HeroPublic(HeroBase):
     id: int
-    name: str
-    secret_name: str
-    age: int | None = None
 
 
 sqlite_file_name = "herobase.db"
