@@ -8,6 +8,7 @@ from app.dependencies.database import get_db_session
 
 team_router = APIRouter()
 
+
 @team_router.post("/teams", response_model=TeamPublic)
 def create_team(*, session: Session = Depends(get_db_session), team: TeamCreate):
     db_team = Team.model_validate(team)

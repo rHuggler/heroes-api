@@ -8,6 +8,7 @@ from app.dependencies.database import get_db_session
 
 hero_router = APIRouter()
 
+
 @hero_router.post("/heroes", response_model=HeroPublic)
 def create_hero(*, session: Session = Depends(get_db_session), hero: HeroCreate):
     db_hero = Hero.model_validate(hero)
@@ -59,4 +60,3 @@ def delete_hero(*, session: Session = Depends(get_db_session), hero_id: int):
     session.delete(hero)
     session.commit()
     return {"ok": True}
-

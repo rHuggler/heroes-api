@@ -6,6 +6,7 @@ from app.dependencies.database import create_db_and_tables
 from app.routers.heroes import hero_router
 from app.routers.teams import team_router
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     # Startup
