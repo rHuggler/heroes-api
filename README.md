@@ -1,3 +1,2 @@
-### life-progress
-Real life progress bars to keep track of my goals
-
+### heroes-api
+Heroes API from [SQLModel + FastAPI docs](https://sqlmodel.tiangolo.com/tutorial/fastapi/)
